@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app } from "../firebase";
 import {
 	getDownloadURL,
@@ -7,11 +7,12 @@ import {
 	uploadBytesResumable,
 } from "firebase/storage";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function CreateListing() {
+export default function updateListing() {
 	const { currentUser } = useSelector((state) => state.user);
 	const navigate = useNavigate();
+	const params = useParams();
 	const [files, setFiles] = useState([]);
 	const [formData, setFormData] = useState({
 		imageUrls: [],
@@ -32,6 +33,23 @@ export default function CreateListing() {
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(false);
 
+	useEffect(() => {
+		const fetchListing = async () => {
+			const listingId = params.listingId;
+			const res = await fetch(`/api/listing/get/${listingId}`);
+			const data = await res.json();
+
+			if (data.success === false) {
+				console.log(data.message);
+				return;
+			}
+
+			setFormData(data);
+		};
+
+		fetchListing();
+	}, []);
+
 	console.log(formData);
 
 	const handleImageSubmit = async (e) => {
@@ -41,7 +59,7 @@ export default function CreateListing() {
 			const promises = [];
 
 			for (let i = 0; i < files.length; i++) {
-				promises.push(storeImage(files[i]));
+				promises.push(storeImage(files[1]));
 			}
 
 			Promise.all(promises)
@@ -138,7 +156,7 @@ export default function CreateListing() {
 			setLoading(true);
 			setError(false);
 
-			const res = await fetch(`/api/listing/create`, {
+			const res = await fetch(`/api/listing/update/${params.listingId}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -161,7 +179,7 @@ export default function CreateListing() {
 	return (
 		<main className=' p-3 max-w-4xl mx-auto'>
 			<h1 className=' text-3xl font-semibold text-center my-7'>
-				Create a Listing
+				Update a Listing
 			</h1>
 			<form
 				onSubmit={handleSubmit}
@@ -364,7 +382,7 @@ export default function CreateListing() {
 						disabled={loading || uploading}
 						className=' bg-gray-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80 p-3'
 					>
-						{loading ? "Creating..." : "Create Listing"}
+						{loading ? "Updating..." : "Update Listing"}
 					</button>
 					{error && <p className=' text-red-700 text-sm'>{error}</p>}
 				</div>
