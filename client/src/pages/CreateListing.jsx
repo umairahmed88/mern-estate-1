@@ -18,7 +18,7 @@ export default function CreateListing() {
 		name: "",
 		description: "",
 		address: "",
-		type: "",
+		type: "rent",
 		bedrooms: "1",
 		bathrooms: "1",
 		regularPrice: 50,
