@@ -137,11 +137,11 @@ export default function Home() {
 								Show more places for sale
 							</Link>
 						</div>
-						{/* <div className='flex flex-wrap gap-4'>
+						<div className='flex flex-wrap gap-4'>
 							{saleListings.map((listing) => (
 								<ListingItem listing={listing} key={listing._id} />
 							))}
-						</div> */}
+						</div>
 					</div>
 				)}
 			</div>
